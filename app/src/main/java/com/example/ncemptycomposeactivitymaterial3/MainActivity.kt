@@ -3,7 +3,10 @@ package com.example.ncemptycomposeactivitymaterial3
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
@@ -12,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +49,12 @@ fun TipTimeCalculatorApp() {
 
 @Composable
 fun TipTimeLayout() {
+    var amountInput by remember {
+        mutableStateOf("")
+    }
+    val amount = amountInput.toDoubleOrNull() ?: 0.0
+    val tip = calculateTip(amount)
+
     Column(
         modifier = Modifier.padding(40.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -61,10 +69,12 @@ fun TipTimeLayout() {
         EditNumberField(
             modifier = Modifier
                 .padding(bottom = 32.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
+            value = amountInput,
+            onValueChange = { amountInput = it }
         )
         Text(
-            text = stringResource(id = R.string.tip_amount, "Ksh. 0.00"),
+            text = stringResource(id = R.string.tip_amount, tip),
             style = MaterialTheme.typography.displaySmall
         )
         Spacer(modifier = Modifier.height(150.dp))
@@ -72,18 +82,23 @@ fun TipTimeLayout() {
 }
 
 @Composable
-fun EditNumberField(modifier: Modifier = Modifier) {
-    var amountInput by remember {
-        mutableStateOf("")
-    }
+fun EditNumberField(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
     BasicTextField(
-        value = amountInput,
+        value = value,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        onValueChange = { amountInput = it },
+        onValueChange = onValueChange,
 //        label ={ Text(text = stringResource(id = R.string.bill_amount))},
-        cursorBrush = Brush.sweepGradient(),
         modifier = modifier
+            .border(
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface),
+                shape = RoundedCornerShape(4.dp)
+            )
+            .padding(8.dp)
     )
 }
 
